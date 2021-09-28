@@ -26,6 +26,9 @@ class Block():
     def __str__(self) -> str:
         return json.dumps(self.__dict__, sort_keys=True)
 
+    def toJson(self) -> str:
+        return self.__dict__
+
     def to_hash(self):
         return hashlib.sha256(self.__str__().encode()).hexdigest()
 
@@ -58,6 +61,8 @@ class Blockchain():
 
         self.current_transactions.append(transaction)
 
+        return len(self.chain)
+
     @staticmethod
     def valid_proof(last_proof, proof):
         guess = f'{last_proof}{proof}'.encode()
@@ -67,8 +72,7 @@ class Blockchain():
     @property
     def last_block(self) -> Block:
         return self.chain[-1]
-
-
-blockchain = Blockchain()
-print(blockchain.last_block)
-print(Miner.proof_of_work(blockchain.last_block.proof))
+    
+    @property
+    def serializableChain(self) -> list:
+        return list(map(lambda block : block.toJson(), self.chain))
